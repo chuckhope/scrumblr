@@ -27,6 +27,8 @@ var sids_to_user_names = [];
 **************/
 var app = express();
 var bodyParser = require('body-parser');
+const { waitForDebugger } = require('inspector');
+const { isContext } = require('vm');
 app.use(bodyParser.urlencoded({ extended: false }));
 var router = express.Router();
 
@@ -55,7 +57,7 @@ var io = require('socket.io')(server, {
  ROUTES
 **************/
 router.get('/', function(req, res) {
-	console.log(req.header('host'));
+	//console.log(req.header('host'));
 	url = req.header('host') + req.baseUrl;
 
 	var connected = io.sockets.connected;
@@ -98,6 +100,28 @@ router.post('/doRegister', function(req, res){
 	});
 });
 
+router.get('/login', function(req, res) {
+	res.render('login.jade', {});
+});
+
+router.post('/doLogin', function(req, res){
+	let user = {username:req.body.username,password:req.body.password,displayName:req.body.displayName};
+	let db = new data(function() {
+		db.checkIfUserExists(user, function(isExists) {
+			if(isExists) {
+				res.redirect('/profile/'+user.username);
+			}
+			else {
+				db.createUser(user, function() {
+					console.log(user);
+					res.redirect('/register?userExists=true');
+				});
+				
+			}
+		});
+	});
+});
+
 router.get('/demo', function(req, res) {
 	res.render('index.jade', {
 		pageTitle: 'scrumblr - demo',
@@ -116,7 +140,7 @@ router.get('/:id', function(req, res){
  SOCKET.I0
 **************/
 io.sockets.on('connection', function (client) {
-	//sanitizes text
+	//santizes text
 	function scrub( text ) {
 		if (typeof text != "undefined" && text !== null)
 		{
@@ -138,7 +162,7 @@ io.sockets.on('connection', function (client) {
 
 
 	client.on('message', function( message ){
-		console.log(message.action + " -- " + util.inspect(message.data) );
+		//console.log(message.action + " -- " + util.inspect(message.data) );
 
 		var clean_data = {};
 		var clean_message = {};
@@ -195,11 +219,9 @@ io.sockets.on('connection', function (client) {
 				clean_data.y = scrub(data.y);
 				clean_data.rot = scrub(data.rot);
 				clean_data.colour = scrub(data.colour);
-				clean_data.stickerId = scrub(data.stickerId);
-				clean_data.storyPoints = scrub(data.storyPoints);
 
 				getRoom(client, function(room) {
-					createCard( room, clean_data.id, clean_data.text, clean_data.x, clean_data.y, clean_data.rot, clean_data.colour, clean_data.stickerId, clean_data.storyPoints);
+					createCard( room, clean_data.id, clean_data.text, clean_data.x, clean_data.y, clean_data.rot, clean_data.colour);
 				});
 
 				message_out = {
@@ -231,31 +253,6 @@ io.sockets.on('connection', function (client) {
 
 				break;
 
-			case 'updateCard':
-				data = message.data;
-				clean_data = {};
-				clean_data.text = scrub(data.text);
-				clean_data.id = scrub(data.id);
-				clean_data.x = scrub(data.x);
-				clean_data.y = scrub(data.y);
-				clean_data.rot = scrub(data.rot);
-				clean_data.colour = scrub(data.colour);
-				clean_data.stickerId = scrub(data.stickerId);
-				clean_data.storyPoints = scrub(data.storyPoints);
-
-
-				getRoom(client, function(room) {
-					updateCard( room, clean_data.id, clean_data.text, clean_data.x, clean_data.y, clean_data.rot, clean_data.colour, clean_data.stickerId, clean_data.storyPoints);
-				});
-
-				message_out = {
-					action: 'updateCard',
-					data: clean_data
-				};
-
-				//report to all other browsers
-				broadcastToRoom( client, message_out );
-				break;
 
 			case 'deleteCard':
 				clean_message = {
@@ -385,7 +382,7 @@ io.sockets.on('connection', function (client) {
 **************/
 function initClient ( client )
 {
-	console.log ('initClient Started');
+	//console.log ('initClient Started');
 	getRoom(client, function(room) {
 
 		db.getAllCards( room , function (cards) {
@@ -450,25 +447,13 @@ function initClient ( client )
 			}
 		}
 
-		console.log('initialusers: ' + roommates);
+		//console.log('initialusers: ' + roommates);
 		client.json.send(
 			{
 				action: 'initialUsers',
 				data: roommates
 			}
 		);
-
-		//showburndownchart;
-		db.getAllCards(room, function(cards){
-		
-			var data = getBurndownchart(cards)
-			client.json.send(
-				{
-					action: 'showburndownchart',
-					data: data
-				}
-			);
-		 })
 
 	});
 }
@@ -486,7 +471,7 @@ function joinRoom (client, room, successFunction)
 
 function leaveRoom (client)
 {
-	console.log (client.id + ' just left');
+	//console.log (client.id + ' just left');
 	var msg = {};
 	msg.action = 'leave-announce';
 	msg.data	= { sid: client.id };
@@ -500,68 +485,18 @@ function broadcastToRoom ( client, message ) {
 }
 
 //----------------CARD FUNCTIONS
-const WorkPriority = {
-    LOW: 0,
-    MEDIUM: 1,
-    HIGH: 2
-}
-
-const WorkStatus = {
-    TODO: 0,
-    INPROGRESS: 1,
-    DONE: 2
-}
-
-function createCard( room, id, text, x, y, rot, colour, stickerId, storyPoints) {
-	var createtime = new Date().format("yyyy-MM-dd hh:mm:ss");
-	var rhrs = parseInt(storyPoints);
-	
-	var remainhrs = {
-		time: createtime,
-		rhrs: rhrs
-	}
-	
+function createCard( room, id, text, x, y, rot, colour ) {
 	var card = {
 		id: id,
-		userid: 0,
 		colour: colour,
 		rot: rot,
 		x: x,
 		y: y,
-		summary: text,
 		text: text,
-		sprintno: 1,
-		rhrs: rhrs,
-		//status: WorkStatus.TODO,
-		//priority: WorkPriority.LOW,
-		createtime: createtime,
-		sticker: stickerId
+		sticker: null
 	};
 
 	db.createCard(room, id, card);
-	db.createRemainhrs(room, id, remainhrs);
-}
-
-function updateCard( room, id, text, x, y, rot, colour, stickerId, storyPoints) {
-	var rhrs = parseInt(storyPoints);
-	var remainhrs = {
-		time: new Date().format("yyyy-MM-dd hh:mm:ss"),
-		rhrs: rhrs
-	}
-	
-	var card = {
-		id: id,
-		colour: colour,
-		rot: rot,
-		x: x,
-		y: y,
-		text: text,
-		sticker: stickerId,
-		rhrs: rhrs
-	};
-
-	db.cardUpdate(room, id, card);
-	db.createRemainhrs(room, id, remainhrs);
 }
 
 function roundRand( max )
@@ -569,140 +504,14 @@ function roundRand( max )
 	return Math.floor(Math.random() * max);
 }
 
-// dateformat
-Date.prototype.format = function(fmt){
-	var o = {
-	  "M+" : this.getMonth()+1,                 //月份
-	  "d+" : this.getDate(),                    //日
-	  "h+" : this.getHours(),                   //小时
-	  "m+" : this.getMinutes(),                 //分
-	  "s+" : this.getSeconds(),                 //秒
-	  "q+" : Math.floor((this.getMonth()+3)/3), //季度
-	  "S"  : this.getMilliseconds()             //毫秒
-	};
-  
-	if(/(y+)/.test(fmt)){
-	  fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-	}
-		  
-	for(var k in o){
-	  if(new RegExp("("+ k +")").test(fmt)){
-		fmt = fmt.replace(
-		  RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));  
-	  }       
-	}
-  
-	return fmt;
-  }
 
-function DateToStr(date){
-	var month =(date.getMonth() + 1).toString();
-	var day = (date.getDate()).toString();
-	var year = date.getFullYear();
-	if (month.length == 1) {
-		month = "0" + month;
-	}
-	if (day.length == 1) {
-		day = "0" + day;
-	}
-	dateTime = year +"-"+ month +"-"+  day;
-	return dateTime;
-}
-
-function strToDate(datestr){
-	var dateStr = new String(datestr);
-	dateStr = dateStr.replace(/-/g, "/");//yyyy-MM-dd to yyyy/MM/dd
-	var dateTime = Date.parse(dateStr);//将日期字符串转换为表示日期的秒数
-	//Date.parse(dateStr)默认情况下只能转换：月/日/年 格式的字符串，但是经测试年/月/日格式的字符串也能被解析
-	var data = new Date(dateTime);//将日期秒数转换为日期格式
-	return data;
-}
-
-//dateformat to yyyy-MM-dd
-function getDate(datetime)
-{
-	var time = new String(datetime);
-	var datestring = time.substring(0, 10);
-	var date = strToDate(datestring);
-	return date;
-}
-
-//get interval days
-function getDateInterval(firstday, lastday)
-{
-	var timesDiff = Math.abs(firstday.getTime() - lastday.getTime());
-	var diffDays = Math.ceil(timesDiff / (1000 * 60 * 60 * 24));//向上取整
-	return diffDays;
-}
-
-//----------------BURNDOWNCHART FUNCTIONS
-function getBurndownchart(cards)
-{
-	var tempmap = new Map();
-	var timearray = new Array();
-	var temptimearray = new Array();
-	var hrsarray = new Array();
-	var data;
-    //every date only one
-    for(var i in cards){
-		var card = cards[i];
-		for(var j in card.remainhrs){
-			var remainhr = card.remainhrs[j];
-			var time = new String(remainhr.time);
-			var date = time.substring(0, 10);
-			if(!tempmap.has(date)){
-				tempmap.set(date, remainhrs);
-				temptimearray.push(date)
-			}
-		}
-	}
-	
-	//----get date array
-	temptimearray.sort();
-	var firstday = strToDate(temptimearray[0]);
-	var lastday = strToDate(temptimearray[temptimearray.length - 1]);
-	var datep = strToDate(temptimearray[0]);
-
-	var diffDays = getDateInterval(firstday, lastday);
-	
-	for(var i = 0; i <= diffDays; i++){
-		timearray.push(datep.format("yyyy-MM-dd"));
-		datep.setDate(datep.getDate() + 1);
-		hrsarray.push(0);
-	}
-
-	//----get remainhrs array
-	for(var i in cards){
-		var card = cards[i];
-		var cardfirstday = getDate(card.createtime);
-		var pointer = getDateInterval(cardfirstday, firstday);
-		var remainhrs;
-		for(var j in card.remainhrs){
-			var remainhr = card.remainhrs[j];
-			remainhrs = remainhr.rhrs;
-			var flagday = getDate(remainhr.time);
-			var intervaldays = getDateInterval(flagday, firstday);
-			while(pointer <= intervaldays){
-				hrsarray[pointer] += remainhrs;
-				pointer++;
-			}
-		}
-		while(pointer <= diffDays){
-			hrsarray[pointer] += remainhrs;
-			pointer++;
-		}
-	}
-
-	data = {date: timearray, rhrs: hrsarray};
-	return data;
-}
 
 //------------ROOM STUFF
 // Get Room name for the given Session ID
 function getRoom( client , callback )
 {
 	room = rooms.get_room( client );
-	console.log( 'client: ' + client.id + " is in " + room);
+	//console.log( 'client: ' + client.id + " is in " + room);
 	callback(room);
 }
 
@@ -711,7 +520,7 @@ function setUserName ( client, name )
 {
 	client.user_name = name;
 	sids_to_user_names[client.id] = name;
-	console.log('sids to user names: ');
+	//console.log('sids to user names: ');
 	console.dir(sids_to_user_names);
 }
 
