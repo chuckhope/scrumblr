@@ -86,7 +86,8 @@ block body
 					input#summary.forminput(type="text" name="summary" )
 				div.FormGroup
 					label(for="assignee") Assignee*
-					input#assignee.forminput(type="text" name="assignee")
+					select#Detail_assignee.text.ui-widget-content.ui-corner-all(type="text" name="assignee" data-live-search="true" data-live-search-style="startsWith" class="selectpicker")
+						option choose an assignee
 				// <input type="text" name="priority" id="priority" class="text ui-widget-content ui-corner-all">
 				div.FormGroup
 					label(for="story_points") Story Points*

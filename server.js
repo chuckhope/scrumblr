@@ -80,6 +80,12 @@ router.get('/profile/:username', function(req, res) {
 	
 });
 
+router.get('/user/getUserList', function(req, res) {
+	db.getUserList(function(userList){
+		res.json(userList);
+	});
+});
+
 router.post('/doRegister', function(req, res){
 	let user = {username:req.body.username,password:req.body.password,displayName:req.body.displayName};
 	let db = new data(function() {

@@ -1047,6 +1047,19 @@ $(function() {
         }
     );
 
+    $(function() {
+        $.ajax({
+            method: "GET",
+            url: "user/getUserList"
+          }).done(function(data){
+            let userList = data;
+            $.each(userList, function(i,user){
+                let option = $("<option></option>").text(user.displayName);
+                $("#Detail_assignee").append(option);
+            });
+          });
+        
+    });
 
     // $('#cog-button').click( function(){
     // 	$('#config-dropdown').fadeToggle();
