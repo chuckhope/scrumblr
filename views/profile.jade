@@ -28,6 +28,7 @@ html(lang='en')
       color: #19ba98;
       background: none;
       display: block;
+      padding: 5px 10px;
     }
     #saveBtn{
       margin-left: 20px;
@@ -40,6 +41,7 @@ html(lang='en')
       color: #19ba98;
       background: none;
       display: block;
+      padding: 5px 10px;
     }
     #displayProfile{
       margin-left: 13px;
@@ -61,10 +63,11 @@ html(lang='en')
   
   body
     h1 scrumblr by <a href="http://aliasaria.ca">aliasaria</a>
+    include ./logout.jade
     div.board-outline(style="height:auto;")
       div#board(style="padding-bottom:10px;")
         div#board-doodles(style="z-index: -1;")
-        h1.home #{data.displayName}
+        h1.home #{data.username}
         - if (data.username == null)
           h1.home User Profile NOT Exist, Please 
             a(href='/register') register.
