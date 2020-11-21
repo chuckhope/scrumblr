@@ -124,6 +124,7 @@ router.post('/doRegister', function(req, res){
 			else {
 				db.createUser(user, function() {
 					console.log(user);
+					req.session.username = user.username;
 					res.redirect('/profile/'+user.username);
 				});
 				
@@ -147,7 +148,7 @@ router.post('/doLogin', function(req, res){
 		db.checkIfUserExists(user, function(isExists) {
 			if(isExists) {
 				req.session.username = user.username;
-				console.log(req.session);
+				//console.log(req.session);
 				res.redirect('/profile/'+user.username);
 			}
 			else {
