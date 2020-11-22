@@ -263,7 +263,35 @@ io.sockets.on('connection', function (client) {
 //					db.cardSetXY( room , message.data.id, message.data.position.left, message.data.position.top);
 //				});
                 getRoom(client, function(room) {
-					db.cardSetXY( room , message.data.id, message.data.parentId, message.data.parentId);
+					data = message.data;
+					clean_data = {};
+					clean_data.text = scrub(data.text);
+					clean_data.id = scrub(data.id);
+					clean_data.x = scrub(data.parentId);
+					clean_data.y = scrub(data.parentId);
+					clean_data.rot = scrub(data.parentId);
+					clean_data.colour = scrub(data.colour);
+					clean_data.stickerId = scrub(data.stickerId);
+					clean_data.storyPoints = scrub(data.storyPoints);
+					clean_data.assignee = scrub(data.assignee);
+
+					if(message.data.parentId != 'col-3'){
+						db.cardSetXY( room , message.data.id, message.data.parentId, message.data.parentId);
+					}else{
+						updateCard( room, clean_data.id, clean_data.text, clean_data.x, clean_data.y, clean_data.rot, clean_data.colour, clean_data.stickerId, 0, clean_data.assignee, function(){
+							updateBurndownchart(room, client);
+						});
+
+						clean_data.storyPoints = 0;
+						message_out = {
+							action: 'updateCard',
+							data: clean_data
+						};
+		
+						//report to all other browsers
+						broadcastToRoom( client, message_out );
+					}
+					
 				});
 
 				break;
