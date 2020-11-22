@@ -290,6 +290,12 @@ io.sockets.on('connection', function (client) {
 		
 						//report to all other browsers
 						broadcastToRoom( client, message_out );
+						client.json.send(
+							{
+								action: 'updateCard',
+								data: clean_data
+							}
+						);
 					}
 					
 				});
