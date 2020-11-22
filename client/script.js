@@ -166,6 +166,9 @@ function getMessage(m) {
         case 'showburndownchart':
             showBurndownchart(message.data);
             break;
+        case 'updateburndownchart':
+            showBurndownchart(message.data);
+            break;
     
         default:
             //unknown message
@@ -208,7 +211,7 @@ function drawNewCard(id, text, parentId, colour, sticker, storyPoints, assignee)
 
     detail_dialog = $( "#Detail-dialog-form" ).dialog({
         autoOpen: false,
-        height: 400,
+        height: 470,
         width: 350,
         modal: true,
         buttons: {
@@ -236,9 +239,9 @@ function drawNewCard(id, text, parentId, colour, sticker, storyPoints, assignee)
         var data = {
             id: cardId,
             text: cards[cardId].text,
-            x: cards[cardId].x,
-            y: cards[cardId].y,
-            rot: cards[cardId].rot,
+            x: cards[cardId].parentId,
+            y: cards[cardId].parentId,
+            rot: cards[cardId].parentId,
             colour: cards[cardId].colour,
             stickerId: cards[cardId].sticker,
             storyPoints: cards[cardId].storyPoints,
@@ -299,6 +302,11 @@ function drawNewCard(id, text, parentId, colour, sticker, storyPoints, assignee)
         var data = {
             id: this.id,
             parentId: $(this).parents().attr("id"),
+            text: cards[this.id].text,
+            colour: cards[this.id].colour,
+            stickerId: cards[this.id].sticker,
+            storyPoints: cards[this.id].storyPoints,
+            assignee: cards[this.id].assignee
         };
         sendAction('moveCard', data);
     });
@@ -415,8 +423,8 @@ function addSticker(cardId, stickerId) {
                 '.png">');
         }
     } else {
-        if (stickerContainer.html().indexOf(stickerId) < 0)
-            stickerContainer.prepend('<img src="images/stickers/' + stickerId +
+        // if (stickerContainer.html().indexOf(stickerId) < 0)
+        stickerContainer.prepend('<img src="images/stickers/' + stickerId +
                 '.png">');
     }
 
@@ -502,6 +510,7 @@ function drawNewColumn(columnName) {
       accept: "*",
       drop: function( event, ui ) {
         ui.draggable.appendTo( $(this) ).fadeIn().css({"position":"relative","top":"0px","left":"0px"});
+        cards[ui.draggable.attr("id")].parentId = ui.draggable.parents().attr("id");
       }
     });
     
@@ -964,7 +973,7 @@ $(function() {
 
     dialog = $( "#Creation-dialog-form" ).dialog({
         autoOpen: false,
-        height: 400,
+        height: 470,
         width: 350,
         modal: true,
         buttons: {
