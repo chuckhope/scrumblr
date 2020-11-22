@@ -282,6 +282,7 @@ io.sockets.on('connection', function (client) {
 							updateBurndownchart(room, client);
 						});
 
+						clean_data.storyPoints = 0;
 						message_out = {
 							action: 'updateCard',
 							data: clean_data
