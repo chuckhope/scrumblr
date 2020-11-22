@@ -70,7 +70,7 @@ block body
 	#Creation-dialog-form(title="Create issue")
 		//p.validateTips All form fields are required.
 		form
-			fieldset
+			field
 				label.form-group-material(for="issue_type" required) Issue Type
 					//select#issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type")
 				select#issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type" class="selectpicker" )
@@ -98,28 +98,32 @@ block body
 	#Detail-dialog-form(title="Issuse detail",style="display: none;")
 		// <p class="validateTips">All form fields are required.</p>
 		form
-			fieldset
-				label(for="issue_type") Issue Type
-				select#Detail_issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type")
+			field
+				label.form-group-material(for="issue_type" required) Issue Type
+					//select#issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type")
+				select#issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type" class="selectpicker" )
 					option Story
 					option Task
 					option Bug
-				label(for="summary") Summary
-				input#Detail_summary.text.ui-widget-content.ui-corner-all(type="text" name="summary")
-				label(for="assignee") Assignee
-				select#Detail_assignee.text.ui-widget-content.ui-corner-all(type="text" name="assignee" data-live-search="true" data-live-search-style="startsWith" class="selectpicker")
+				// <input type="text" name="issue_type" id="issue_type" class="text ui-widget-content ui-corner-all">
+				label.form-group-material(for="summary" required) Summary
+				input#summary.ui-widget-content.ui-corner-all.material-field(type="text" name="summary" )
+				label.form-group-material(for="assignee" required) Assignee
+				select#assignee.width.ui-widget-content.ui-corner-all(type="text" name="assignee" data-live-search="true" data-live-search-style="startsWith" class="selectpicker" )
 					option choose an assignee
-				label(for="priority") Priority
-				select#Detail_priority.ui-widget-content.ui-corner-all(type="text" name="priority")
+				label.form-group-material(for="priority" required) Priority
+				select#priority.ui-widget-content.ui-corner-all(type="text" name="priority" class="selectpicker" )
 					option Highest
 					option High
-					option Medium
+					option(selected="") Medium
 					option Low
 					option Lowest
-				label(for="story_points") Story Points
-				input#Detail_story_points.text.ui-widget-content.ui-corner-all(type="text" name="story_points")
+				// <input type="text" name="priority" id="priority" class="text ui-widget-content ui-corner-all">
+				label.form-group-material(for="story_points") Story Points
+				input#story_points.ui-widget-content.ui-corner-all.material-field(type="text" name="story_points")
 				// Allow form submission with keyboard without duplicating the dialog button
-				input(type="submit" tabindex="-1" style="position:absolute; top:-1000px")
+				input.material-field(type="submit" tabindex="-1" style="position:absolute; top:-1000px")
+	#Detail-dialog-form(title="Issuse detail",style="display: none; ")
 
 	//div.trash
 	//	i.fa.fa-trash-o.fa-lg.faded-icon
