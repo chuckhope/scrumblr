@@ -653,8 +653,8 @@ img {
   
   .form-group-material {
 	position: relative;
-	margin-top: 20px;
-	margin-bottom: 12px;
+	margin-top: 6px;
+	margin-bottom: 6px;
   }
   .form-group-material:after {
 	height: 1px;
@@ -708,7 +708,7 @@ img {
   
   input.material-field, textarea.material-field {
 	border-width: 3PX;
-	margin-bottom: 12px;
+	margin-bottom: 6px;
     width: 75%;
     padding: .4em;
 	padding-left: 0;
@@ -762,8 +762,19 @@ img {
 		width: 400px;
 		height:300px;
 	}
-
-
+	
+field {
+		padding: 0;
+		border: 0;
+		margin-top: NONE;
+	}
+le {
+		height: 465px;
+	}
+#Creation-dialog-form.el{
+		
+		height: 465px;
+	}
 /* states and images */
 .ui-icon { width: 16px; height: 16px; background-image: url(../images/ui-icons_222222_256x240.png); }
 .ui-widget-content .ui-icon {background-image: url(../images/ui-icons_222222_256x240.png); }

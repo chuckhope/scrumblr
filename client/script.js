@@ -211,7 +211,7 @@ function drawNewCard(id, text, parentId, colour, sticker, storyPoints, assignee)
 
     detail_dialog = $( "#Detail-dialog-form" ).dialog({
         autoOpen: false,
-        height: 400,
+        height: 470,
         width: 350,
         modal: true,
         buttons: {
@@ -967,7 +967,7 @@ $(function() {
 
     dialog = $( "#Creation-dialog-form" ).dialog({
         autoOpen: false,
-        height: 400,
+        height: 470,
         width: 350,
         modal: true,
         buttons: {
