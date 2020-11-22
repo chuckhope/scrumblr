@@ -302,6 +302,11 @@ function drawNewCard(id, text, parentId, colour, sticker, storyPoints, assignee)
         var data = {
             id: this.id,
             parentId: $(this).parents().attr("id"),
+            text: cards[this.id].text,
+            colour: cards[this.id].colour,
+            stickerId: cards[this.id].sticker,
+            storyPoints: cards[this.id].storyPoints,
+            assignee: cards[this.id].assignee
         };
         sendAction('moveCard', data);
     });
