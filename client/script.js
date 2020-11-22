@@ -239,9 +239,9 @@ function drawNewCard(id, text, parentId, colour, sticker, storyPoints, assignee)
         var data = {
             id: cardId,
             text: cards[cardId].text,
-            x: cards[cardId].x,
-            y: cards[cardId].y,
-            rot: cards[cardId].rot,
+            x: cards[cardId].parentId,
+            y: cards[cardId].parentId,
+            rot: cards[cardId].parentId,
             colour: cards[cardId].colour,
             stickerId: cards[cardId].sticker,
             storyPoints: cards[cardId].storyPoints,
@@ -510,6 +510,7 @@ function drawNewColumn(columnName) {
       accept: "*",
       drop: function( event, ui ) {
         ui.draggable.appendTo( $(this) ).fadeIn().css({"position":"relative","top":"0px","left":"0px"});
+        cards[ui.draggable.attr("id")].parentId = ui.draggable.parents().attr("id");
       }
     });
     
