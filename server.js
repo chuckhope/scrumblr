@@ -297,7 +297,7 @@ io.sockets.on('connection', function (client) {
 							}
 						);
 					}
-					
+					updateBurndownchart(room, client);
 				});
 
 				break;
@@ -815,6 +815,9 @@ function getBurndownchart(cards)
     //every date only one
     for(var i in cards){
 		var card = cards[i];
+		if(card.x == 'todo-row'){
+			continue;
+		}
 		for(var j in card.remainhrs){
 			var remainhr = card.remainhrs[j];
 			var time = new String(remainhr.time);
@@ -847,6 +850,9 @@ function getBurndownchart(cards)
 		var point2;
 		var pointer = 0;
 		var remainhrs = 0;
+		if(card.x == 'todo-row'){
+			continue;
+		}
 		for(var j in card.remainhrs){
 			var remainhr = card.remainhrs[j];
 			point2 = getDate(remainhr.time);
@@ -883,6 +889,7 @@ function updateBurndownchart(room, client){
 				data: data
 			}
 		);
+		console.log(data);
 	 })
 }
 
