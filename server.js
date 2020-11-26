@@ -276,7 +276,9 @@ io.sockets.on('connection', function (client) {
 					clean_data.assignee = scrub(data.assignee);
 
 					if(message.data.parentId != 'col-3'){
-						db.cardSetXY( room , message.data.id, message.data.parentId, message.data.parentId);
+						db.cardSetXY( room , message.data.id, message.data.parentId, message.data.parentId, function(){
+							updateBurndownchart(room, client);
+						});
 					}else{
 						updateCard( room, clean_data.id, clean_data.text, clean_data.x, clean_data.y, clean_data.rot, clean_data.colour, clean_data.stickerId, 0, clean_data.assignee, function(){
 							updateBurndownchart(room, client);
@@ -297,7 +299,6 @@ io.sockets.on('connection', function (client) {
 							}
 						);
 					}
-					updateBurndownchart(room, client);
 				});
 
 				break;
