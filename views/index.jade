@@ -73,7 +73,7 @@ block body
 			field
 				label.form-group-material(for="issue_type" required) Issue Type
 					//select#issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type")
-				select#issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type" class="selectpicker" )
+				select#issue_type.ui-widget-content.ui-corner-all.btn-default1(type="text" name="issue_type"  )
 					option Story
 					option Task
 					option Bug
@@ -84,7 +84,7 @@ block body
 				select#assignee.width.ui-widget-content.ui-corner-all(type="text" name="assignee" data-live-search="true" data-live-search-style="startsWith" class="selectpicker" )
 					option choose an assignee
 				label.form-group-material(for="priority" required) Priority
-				select#priority.ui-widget-content.ui-corner-all(type="text" name="priority" class="selectpicker" )
+				select#priority.ui-widget-content.ui-corner-all.btn-default1(type="text" name="priority"  )
 					option Highest
 					option High
 					option(selected="") Medium
@@ -100,7 +100,7 @@ block body
 		form
 			field
 				label.form-group-material(for="issue_type") Issue Type
-				select#Detail_issue_type.ui-widget-content.ui-corner-all(type="text" name="issue_type" class="selectpicker")
+				select#Detail_issue_type.ui-widget-content.ui-corner-all.btn-default1(type="text" name="issue_type" )
 					option Story
 					option Task
 					option Bug
@@ -110,7 +110,7 @@ block body
 				select#Detail_assignee.text.ui-widget-content.ui-corner-all(type="text" name="assignee" data-live-search="true" data-live-search-style="startsWith" class="selectpicker")
 					option choose an assignee
 				label.form-group-material(for="priority") Priority
-				select#Detail_priority.ui-widget-content.ui-corner-all(type="text" name="priority" class="selectpicker")
+				select#Detail_priority.ui-widget-content.ui-corner-all.btn-default1(type="text" name="priority" )
 					option Highest
 					option High
 					option Medium

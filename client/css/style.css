@@ -709,7 +709,7 @@ img {
   input.material-field, textarea.material-field {
 	border-width: 3PX;
 	margin-bottom: 6px;
-    width: 75%;
+    width: 70%;
     padding: .4em;
 	padding-left: 0;
 	padding-right: 0;
@@ -771,9 +771,32 @@ field {
 le {
 		height: 465px;
 	}
-#Creation-dialog-form.el{
-		
-		height: 465px;
+
+.btn-default1 
+{		width: 218px;
+		height: 34px;
+		color: #333;
+		background-color: #fff;
+		border-color: #ccc;
+		display: inline-block;
+		padding: 6px 12px;
+		margin-bottom: 0;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1.42857143;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		-ms-touch-action: manipulation;
+		touch-action: manipulation;
+		cursor: pointer;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		background-image: none;
+		border: 1px solid transparent;
+		border-radius: 4px;
 	}
 /* states and images */
 .ui-icon { width: 16px; height: 16px; background-image: url(../images/ui-icons_222222_256x240.png); }
