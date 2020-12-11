@@ -1,4 +1,7 @@
-scrumblr
+scrumblr plus : A group-project based on scumblr with 6 new features: login, profile, kanban revolution, note improvement, burndown chart, MongoDB reconfiguration.
+========
+
+scrumblr 
 ========
 
 what is it
